@@ -70,7 +70,7 @@ const html = `<!DOCTYPE html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html {
             scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
+            scroll-snap-type: y proximity;
             color-scheme: light;
         }
         body {
@@ -128,7 +128,7 @@ const html = `<!DOCTYPE html>
             flex-direction: column;
             justify-content: center;
             position: relative;
-            overflow: hidden;
+            overflow: clip;
         }
         .slide-content {
             max-width: var(--content-max-width);
@@ -399,14 +399,12 @@ const html = `<!DOCTYPE html>
            MOBILE (≤768px)
            ===================================================================== */
         @media (max-width: 768px) {
-            html { scroll-snap-type: y proximity; }
             .nav-dots { display: none; }
             .slide {
-                padding: 1.5rem 1.2rem;
-                min-height: auto;
-                min-height: 100dvh;
+                padding: 1.5rem 1.25rem;
+                padding-left: max(1.25rem, env(safe-area-inset-left));
+                padding-right: max(1.25rem, env(safe-area-inset-right));
             }
-            .slide-content { overflow-y: auto; overflow-x: hidden; }
 
             .slide--title {
                 background:
@@ -436,6 +434,9 @@ const html = `<!DOCTYPE html>
                 flex-direction: column; text-align: center; gap: 1.5rem;
             }
             .meet-ann-layout .ann-info { text-align: left; }
+
+            /* B&A slide needs visible overflow for horizontal carousel */
+            #slide-3 { overflow: visible; }
 
             /* B&A: horizontal scroll carousel on mobile */
             .ba-grid {
@@ -468,9 +469,17 @@ const html = `<!DOCTYPE html>
             /* Connect slide mobile */
             .connect-grid {
                 flex-direction: column; gap: 1.5rem;
+                align-items: center;
             }
-            .connect-left { text-align: center; }
+            .connect-left {
+                text-align: center;
+                display: flex; flex-direction: column; align-items: center;
+                width: 100%;
+            }
+            .connect-left p { margin-left: auto; margin-right: auto; }
             .connect-contact { align-items: center; }
+            .contact-line { justify-content: center; }
+            .logo-footer { margin: 0 auto; }
             .qr-code { width: 160px; height: 160px; }
 
             .accent-strip { height: 3px; }
