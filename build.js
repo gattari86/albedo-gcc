@@ -110,6 +110,7 @@ const html = `<!DOCTYPE html>
             border: none;
         }
         .nav-dot:hover { opacity: 0.5; transform: scale(1.3); }
+        .nav-dot:focus-visible { outline: 2px solid var(--soft-gold); outline-offset: 2px; }
         .nav-dot.active {
             opacity: 1; background: var(--coral-rose);
             box-shadow: 0 0 0 3px rgba(210,126,101,0.25);
@@ -236,6 +237,11 @@ const html = `<!DOCTYPE html>
         .reveal-delay-4 { transition-delay: 0.4s; }
         .reveal-delay-5 { transition-delay: 0.5s; }
 
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { transition: none; opacity: 1; transform: none; }
+        }
+
         /* =====================================================================
            COMPONENT STYLES
            ===================================================================== */
@@ -246,7 +252,7 @@ const html = `<!DOCTYPE html>
             box-shadow: 0 8px 30px rgba(30,72,77,0.15);
         }
         .ann-photo-small {
-            width: 72px; height: 72px; border-radius: 50%;
+            width: 88px; height: 88px; border-radius: 50%;
             border: 3px solid rgba(255,255,255,0.4);
             object-fit: cover; object-position: center 20%;
         }
@@ -374,7 +380,9 @@ const html = `<!DOCTYPE html>
             body { font-size: 17px; }
 
             .grid-4 { grid-template-columns: 1fr 1fr; gap: 1rem; }
-            .ba-grid { gap: 1rem; }
+            .ba-grid { grid-template-columns: 1fr 1fr !important; gap: 1rem; }
+            .ba-grid .ba-frame:nth-child(3) { grid-column: 1 / -1; max-width: 60%; margin: 0 auto; }
+            .ba-frame img { max-height: 35vh; object-fit: cover; }
             .ann-photo { width: 170px; height: 170px; }
 
             .why-grid { gap: 0.8rem; }
@@ -466,6 +474,7 @@ const html = `<!DOCTYPE html>
             .qr-code { width: 160px; height: 160px; }
 
             .accent-strip { height: 3px; }
+            .ba-dots { display: flex !important; }
         }
 
         @media (max-width: 480px) {
@@ -620,7 +629,14 @@ const html = `<!DOCTYPE html>
             </div>
         </div>
 
-        <p class="reveal reveal-delay-3" style="text-align:center;margin-top:1.2rem;color:var(--text-muted);font-size:0.9rem;">
+        <!-- Swipe indicator (mobile only) -->
+        <div class="ba-dots reveal reveal-delay-3" style="display:none;justify-content:center;gap:8px;margin-top:0.8rem;">
+            <span class="ba-dot active" style="width:8px;height:8px;border-radius:50%;background:var(--coral-rose);transition:background 0.2s;"></span>
+            <span class="ba-dot" style="width:8px;height:8px;border-radius:50%;background:var(--sage-green);opacity:0.3;transition:background 0.2s,opacity 0.2s;"></span>
+            <span class="ba-dot" style="width:8px;height:8px;border-radius:50%;background:var(--sage-green);opacity:0.3;transition:background 0.2s,opacity 0.2s;"></span>
+        </div>
+
+        <p class="reveal reveal-delay-3" style="text-align:center;margin-top:0.8rem;color:var(--text-muted);font-size:0.9rem;">
             Every job documented with before &amp; after photography via CompanyCam
         </p>
     </div>
@@ -631,11 +647,9 @@ const html = `<!DOCTYPE html>
      ═══════════════════════════════════════════════════════════════ -->
 <section class="slide slide--white" id="slide-4">
     <div class="slide-content">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
-            <div>
-                <p class="eyebrow reveal">Our Promise</p>
-                <h2 class="reveal reveal-delay-1" style="margin-bottom:0;">Why <span class="accent">Albedo's Return</span></h2>
-            </div>
+        <p class="eyebrow reveal">Our Promise</p>
+        <div style="display:flex;align-items:baseline;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <h2 class="reveal reveal-delay-1" style="margin-bottom:0;">Why <span class="accent">Albedo's Return</span></h2>
             <div class="reveal reveal-delay-2">
                 <div class="social-proof">
                     <span style="color:var(--soft-gold);font-size:1.2rem;">&#9733;</span>
@@ -802,6 +816,21 @@ const html = `<!DOCTYPE html>
             slides[current - 1].scrollIntoView({ behavior: 'smooth' });
         }
     });
+
+    // B&A swipe indicator dots (mobile)
+    const baGrid = document.querySelector('.ba-grid');
+    const baDots = document.querySelectorAll('.ba-dot');
+    if (baGrid && baDots.length) {
+        baGrid.addEventListener('scroll', () => {
+            const scrollLeft = baGrid.scrollLeft;
+            const frameWidth = baGrid.querySelector('.ba-frame')?.offsetWidth || 1;
+            const idx = Math.round(scrollLeft / (frameWidth + 16)); // 16 = gap
+            baDots.forEach((dot, i) => {
+                dot.style.opacity = i === idx ? '1' : '0.3';
+                dot.style.background = i === idx ? 'var(--coral-rose)' : 'var(--sage-green)';
+            });
+        });
+    }
 </script>
 
 </body>
