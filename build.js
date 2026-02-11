@@ -70,7 +70,7 @@ const html = `<!DOCTYPE html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html {
             scroll-behavior: smooth;
-            scroll-snap-type: y proximity;
+            scroll-snap-type: y mandatory;
             color-scheme: light;
         }
         body {
@@ -121,14 +121,13 @@ const html = `<!DOCTYPE html>
            ===================================================================== */
         .slide {
             min-height: 100vh;
-            min-height: 100dvh;
             padding: var(--slide-padding);
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             justify-content: center;
             position: relative;
-            overflow: clip;
+            overflow: hidden;
         }
         .slide-content {
             max-width: var(--content-max-width);
@@ -401,9 +400,22 @@ const html = `<!DOCTYPE html>
         @media (max-width: 768px) {
             .nav-dots { display: none; }
             .slide {
-                padding: 1.5rem 1.25rem;
-                padding-left: max(1.25rem, env(safe-area-inset-left));
-                padding-right: max(1.25rem, env(safe-area-inset-right));
+                height: 100svh;
+                height: 100dvh;
+                min-height: auto;
+                padding: 20px 16px;
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            .slide-content {
+                flex: 1;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+                display: flex;
+                flex-direction: column;
             }
 
             .slide--title {
@@ -434,9 +446,6 @@ const html = `<!DOCTYPE html>
                 flex-direction: column; text-align: center; gap: 1.5rem;
             }
             .meet-ann-layout .ann-info { text-align: left; }
-
-            /* B&A slide needs visible overflow for horizontal carousel */
-            #slide-3 { overflow: visible; }
 
             /* B&A: horizontal scroll carousel on mobile */
             .ba-grid {
